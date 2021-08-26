@@ -14,25 +14,35 @@ import {IEvent} from '../../../shared/types/IEvent';
           bottom: 0px;
           left: 0px;
           right: 0px;
+          overflow-y: auto;
       }
 
       events-dataview {
-          flex-grow: 1;
+          width: 468px;
+          min-height: 50%;
       }
 
-      event-properties {
-          flex-grow: 1;
+      events-statistics {
+          width: calc(100% - 468px);
+      }
+
+      @media only screen and (max-width: 900px) {
+        .events_container {
+          flex-direction: column;
+        }
+
+        events-statistics {
+          width: 100%;
+      }
       }
     `],
     template: `
       <div class="events_container">
         <events-dataview [initEventsDataview]="eventsList"></events-dataview>
-        <event-properties></event-properties>
+        <events-statistics></events-statistics>
       </div>
     `
 })
 export class EventsContainerComponent {
     eventsList: IEvent[] = events;
-
-    constructor() {}
 }

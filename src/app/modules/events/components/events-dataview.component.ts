@@ -1,4 +1,6 @@
 import {Component, Input, ChangeDetectionStrategy} from '@angular/core';
+import { _ } from 'ag-grid-community';
+import {EventsService} from '../services/events.service';
 
 @Component({
     selector: 'events-dataview',
@@ -26,7 +28,8 @@ export class EventsDataviewComponent {
   columnDefs = [];
   rowData = [];
   defaultSelectedRowIndex = 0;
-  isSelectedRow = false;
+
+  constructor(private eventsService: EventsService) {}
 
   initDataView(_data) {
       this.gridOptions = {
@@ -37,11 +40,8 @@ export class EventsDataviewComponent {
             rowNode.setSelected(true);
           },
           onRowSelected: event => {
-            if(!this.isSelectedRow) {
-                this.isSelectedRow = true;
-            } else {
+            if(event.node.selected) {
                 this.displaySelectedProperties(event.rowIndex);  
-                this.isSelectedRow = false;
             }
           },
           navigateToNextCell: (params) => {
@@ -66,15 +66,22 @@ export class EventsDataviewComponent {
       }
 
       this.columnDefs = [
-          {field: 'timestamp', sortable: true, filter: false},
-          {field: 'price', sortable: true, filter: false},
-          {field: 'status', sortable: true, filter: true}
+          {field: 'timestamp', sortable: true, filter: false, width: 150},
+          {field: 'price', sortable: true, filter: false, width: 150},
+          {field: 'status', sortable: true, filter: true, width: 150}
       ];
 
       this.rowData = _data;
   }
 
   displaySelectedProperties(_index) {
-    console.log(_index)
+    let updatedEventsHistoryStatistics = {
+      previous: this.rowData[_index - 1],
+      current: this.rowData[_index],
+      next: this.rowData[_index + 1]
+    }
+
+    this.eventsService.setEventsHistoryStatistics(updatedEventsHistoryStatistics);
+    this.eventsService.setCurrentSelectedEvent(this.rowData[_index]);
   }
 }
